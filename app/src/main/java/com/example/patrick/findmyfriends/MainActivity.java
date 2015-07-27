@@ -118,10 +118,19 @@ public class MainActivity extends Activity implements SensorEventListener{
         // check if you are connected or not
         if(isConnected()){
             tvIsConnected.setBackgroundColor(0xFF0000CC);
-            tvIsConnected.setText("Download ok, GPS waiting");
+            if (lm.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                tvIsConnected.setText("Download ok, GPS waiting");
+            } else {
+                tvIsConnected.setText("Download ok, GPS disabled");
+            }
+
         }
         else{
-            tvIsConnected.setText("Download waiting, GPS waiting");
+            if (lm.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                tvIsConnected.setText("Download waiting, GPS waiting");
+            } else {
+                tvIsConnected.setText("Download waiting, GPS disabled");
+            }
         }
 
         mWebView.loadUrl("file:///android_asset/map.html");

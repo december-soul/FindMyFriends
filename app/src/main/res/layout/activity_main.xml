@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
     android:orientation="vertical" >
 
     <TextView
@@ -16,7 +16,7 @@
         android:text="is connected? " />
 
     <Spinner
-        android:layout_width="match_parent"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:id="@+id/spinner" />
 
@@ -25,19 +25,22 @@
         android:layout_width="fill_parent"
         android:layout_height="200dp">
 
-        <TextView
-            android:id="@+id/etResponse"
-            android:layout_width="match_parent"
+        <ScrollView
+            android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:layout_weight="0.5"
-            android:inputType="textNoSuggestions|textMultiLine"
-            android:editable="false"
-            android:clickable="false">\
-            <requestFocus />
-        </TextView>
+            android:layout_weight="0.5">
+            <TextView
+                android:id="@+id/etResponse"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="textNoSuggestions|textMultiLine"
+                android:editable="false"
+                android:clickable="false">\
+            </TextView>
+        </ScrollView>
 
         <ImageView
-            android:layout_width="match_parent"
+            android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_weight="0.5"
             android:id="@+id/imageView" >
@@ -45,8 +48,8 @@
     </LinearLayout>
 
     <WebView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
         android:id="@+id/webView"
         android:layout_gravity="center_horizontal" />
 </LinearLayout>

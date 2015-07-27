@@ -62,6 +62,7 @@ public class MainActivity extends Activity implements SensorEventListener{
     private float currentDegree = 0f;
     private SensorManager mSensorManager;
     private LocationListener mLocationListener;
+    private int updatecount = 0;
 
 
     public void setCurrentlocation(Location currentlocation) {
@@ -87,18 +88,18 @@ public class MainActivity extends Activity implements SensorEventListener{
         mLocationListener = new MyLocationListener(currentlocation);
 
         LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 35000, 10, this.mLocationListener);
+        lm.requestLocationUpdates(LocationManager.GPS_PROVIDER,2000,0,mLocationListener);
 
         image = (ImageView) findViewById(R.id.imageView);
         image.setImageResource(R.drawable.compass);
 
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 
-        currentlocation.setLatitude(0);
-        currentlocation.setLongitude(0);
+        currentlocation.setLatitude(54.034524);
+        currentlocation.setLongitude(9.362912);
 
-        targetlocation.setLatitude(0);
-        targetlocation.setLongitude(0);
+        targetlocation.setLatitude(54.034524);
+        targetlocation.setLongitude(9.362912);
         userlist = new ArrayList<User>();
         targetuser = 0;
 
@@ -116,12 +117,11 @@ public class MainActivity extends Activity implements SensorEventListener{
 
         // check if you are connected or not
         if(isConnected()){
-            tvIsConnected.setBackgroundColor(0xFF00CC00);
-            tvIsConnected.setText("You are conncted");
-
+            tvIsConnected.setBackgroundColor(0xFF0000CC);
+            tvIsConnected.setText("Download ok, GPS waiting");
         }
         else{
-            tvIsConnected.setText("You are NOT conncted");
+            tvIsConnected.setText("Download waiting, GPS waiting");
         }
 
         mWebView.loadUrl("file:///android_asset/map.html");
@@ -162,10 +162,12 @@ public class MainActivity extends Activity implements SensorEventListener{
     @Override
     public void onSensorChanged(SensorEvent event) {
 
+        updatecount++;
 
 
         double distance = currentlocation.distanceTo(targetlocation);
         float bearing = currentlocation.bearingTo(targetlocation);
+
 
         // get the angle around the z-axis rotated
         float degree = Math.round(event.values[0]);
@@ -176,27 +178,31 @@ public class MainActivity extends Activity implements SensorEventListener{
         if (degree2 < 0)
             degree2 += 360.0;
 
-        etResponse.setTextSize(18);
-        String str = "distance:\n";
-        Log.d("bearing ", Float.toString(bearing));
-        Log.d("degree ", Float.toString(degree));
-        Log.d("degree2 ", Float.toString(degree2));
-        //str += "degrees=" + Float.toString(degree) + "\n";
-        //str += "degrees2=" + Float.toString(degree2) + "\n";
-        str += Math.round(distance) + "m\n";
-        Long unixstime = 0L;
-        if (userlist.size()>0) {
-            unixstime = Long.decode(userlist.get(targetuser).getTime()) * 1000;
+        //Log.d("bearing ", Float.toString(bearing));
+        //Log.d("degree ", Float.toString(degree));
+        //Log.d("degree ", Float.toString(degree2));
+
+        //etResponse.setTextSize(28);
+        if (updatecount > 20) {
+            if ((currentlocation.getLatitude() != 54.034524) && (currentlocation.getLongitude() != 9.362912))
+            {
+                tvIsConnected.setBackgroundColor(0xFF00CC00);
+                tvIsConnected.setText("Download OK, GPS OK");
+            }
+            String str = "distance:\n";
+            str += Math.round(distance) + "m\n";
+            Long unixstime = 0L;
+            if (userlist.size() > 0) {
+                unixstime = Long.decode(userlist.get(targetuser).getTime()) * 1000;
+            }
+            java.util.Date df = new java.util.Date(unixstime);
+            String vv = new SimpleDateFormat("HH:mm:ss dd.MM.yyyy").format(df);
+            str += "last update\n" + vv + "\n";
+            str += "cLat=" + currentlocation.getLatitude() + "\n";
+            str += "cLon=" + currentlocation.getLongitude() + "\n";
+            etResponse.setText(str);
+            updatecount = 0;
         }
-        java.util.Date df = new java.util.Date(unixstime);
-        String vv = new SimpleDateFormat("HH:mm:ss dd.MM.yyyy").format(df);
-        //Date date = Date.from(Instant.ofEpochSecond(unixstime));
-        //Calendar mydate = Calendar.getInstance();
-        //mydate.setTimeInMillis(unixstime*1000);
-        str += "last update\n" + vv +"\n";
-        str += "cLat=" + currentlocation.getLatitude() + "\n";
-        str += "cLon=" + currentlocation.getLongitude() + "\n";
-        etResponse.setText(str);
 
 
         // create a rotation animation (reverse turn degree degrees)
